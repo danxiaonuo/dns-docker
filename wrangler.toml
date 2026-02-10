@@ -1,0 +1,24 @@
+# Cloudflare Workers 配置 - 用于在容器内用 wrangler dev 运行 workers.js
+name = "doh-worker"
+main = "workers.js"
+compatibility_date = "2026-01-01"
+
+# 默认/开发环境变量（与 workers.js 中 env 对应）
+[vars]
+# PATH = "dns-query"
+# DOH = "https://cloudflare-dns.com"
+
+# 生产环境：docker-compose 默认使用此配置
+[env.production]
+# [env.production.vars]
+# DOH = "https://cloudflare-dns.com"
+# PATH = "dns-query"
+# TOKEN = "your-production-token"
+# URL302 = "https://example.com"
+# URL = "https://example.com"
+
+# 开发环境变量（可选，.dev.vars 或此处）
+# [env.dev.vars]
+# TOKEN = "your-token"
+# URL302 = "https://example.com"
+# URL = "https://example.com"
