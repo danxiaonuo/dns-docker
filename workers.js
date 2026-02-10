@@ -290,7 +290,285 @@ async function DOHRequest(request) {
 }
 
 async function HTML() {
-  const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>DoH Resolver</title></head><body><h1>DNS-over-HTTPS Resolver</h1><p>DoH 路径: /${DoH路径}</p><p>上游: ${DoH}</p></body></html>`;
+  const html = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNS-over-HTTPS Resolver</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #ffb861, #ff8a5c);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+    .container {
+      width: 100%;
+      max-width: 960px;
+      padding: 32px 16px;
+    }
+    .card {
+      background: #fff7f0;
+      border-radius: 18px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+      padding: 32px 28px 28px;
+    }
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f05a28;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #444;
+    }
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+    label {
+      font-size: 14px;
+      color: #555;
+      min-width: 90px;
+    }
+    select, input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ffd1a8;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+      background-color: #fff;
+    }
+    select:focus, input[type="text"]:focus {
+      border-color: #ff8a5c;
+      box-shadow: 0 0 0 2px rgba(255,138,92,0.25);
+    }
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s, box-shadow 0.2s, transform 0.05s;
+    }
+    .btn-primary {
+      background-color: #ff6b3d;
+      color: #fff;
+      flex: 1;
+    }
+    .btn-primary:hover {
+      background-color: #ff5a26;
+      box-shadow: 0 6px 16px rgba(255,91,37,0.35);
+    }
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 8px rgba(255,91,37,0.3);
+    }
+    .btn-secondary {
+      background-color: #ffe0c4;
+      color: #aa5b2d;
+      min-width: 70px;
+    }
+    .btn-secondary:hover {
+      background-color: #ffd2aa;
+    }
+    .result-section {
+      margin-top: 12px;
+    }
+    .result-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #444;
+    }
+    .result-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px 12px;
+      min-height: 80px;
+      border: 1px solid #ffe0c4;
+      font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      overflow-x: auto;
+      background-image: linear-gradient(transparent 50%, rgba(255, 243, 230, 0.9) 50%);
+      background-size: 100% 32px;
+    }
+    .footer {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #85501e;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .footer a {
+      color: #ff4f1a;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    .small {
+      font-size: 12px;
+      color: #aa6b39;
+    }
+    @media (max-width: 600px) {
+      .card {
+        padding: 20px 16px 18px;
+      }
+      .title {
+        font-size: 22px;
+      }
+      .form-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      label {
+        min-width: auto;
+      }
+      .btn-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="title">DNS-over-HTTPS Resolver</div>
+
+      <div class="section-title">DNS 查询设置</div>
+
+      <div class="form-row">
+        <label for="dohSelect">选择 DoH 地址：</label>
+        <select id="dohSelect">
+          <option value="" id="currentDohOption">当前站点 DoH</option>
+          <option value="https://${DoH}/dns-query">cloudflare-dns.com（官方）</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="domainInput">待解析域名：</label>
+        <input type="text" id="domainInput" placeholder="例如：outlook.live.com" />
+        <button class="btn-secondary" type="button" id="clearBtn">清除</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" type="button" id="resolveBtn">解析</button>
+      </div>
+
+      <div class="result-section">
+        <div class="result-title">解析结果</div>
+        <div id="resultBox" class="result-box"></div>
+      </div>
+
+      <div class="footer">
+        <div>DNS-over-HTTPS：<a href="#" id="currentDohLink"></a></div>
+        <div class="small">基于 Cloudflare Workers 上游 ${DoH} 的 DoH (DNS over HTTPS) 解析服务</div>
+        <div class="small">DoH 路径：/<span id="pathSpan">${DoH路径}</span>　上游：<span id="upstreamSpan">${DoH}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var dohSelect = document.getElementById('dohSelect');
+      var domainInput = document.getElementById('domainInput');
+      var resultBox = document.getElementById('resultBox');
+      var resolveBtn = document.getElementById('resolveBtn');
+      var clearBtn = document.getElementById('clearBtn');
+      var currentDohOption = document.getElementById('currentDohOption');
+      var currentDohLink = document.getElementById('currentDohLink');
+
+      function init() {
+        try {
+          var currentOrigin = window.location.origin;
+          var dohPath = '/${DoH路径}';
+          var currentUrl = currentOrigin + dohPath;
+          currentDohOption.value = currentUrl;
+          currentDohOption.textContent = currentUrl + '（当前站点）';
+          currentDohLink.textContent = currentUrl;
+          currentDohLink.href = currentUrl;
+          dohSelect.value = currentUrl;
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      function formatError(message) {
+        return '错误：' + message;
+      }
+
+      async function doResolve() {
+        var domain = (domainInput.value || '').trim();
+        if (!domain) {
+          resultBox.textContent = formatError('请输入要解析的域名');
+          return;
+        }
+        var doh = dohSelect.value;
+        if (!doh) {
+          resultBox.textContent = formatError('请选择 DoH 地址');
+          return;
+        }
+        resultBox.textContent = '正在查询 ' + domain + ' ...';
+        try {
+          var url = doh + '?name=' + encodeURIComponent(domain) + '&type=A';
+          var res = await fetch(url, { headers: { 'Accept': 'application/dns-json' } });
+          if (!res.ok) {
+            var text = await res.text();
+            throw new Error('HTTP ' + res.status + ': ' + text.slice(0, 200));
+          }
+          var data = await res.json();
+          resultBox.textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+          resultBox.textContent = formatError(err.message || String(err));
+        }
+      }
+
+      resolveBtn.addEventListener('click', doResolve);
+      clearBtn.addEventListener('click', function () {
+        domainInput.value = '';
+        resultBox.textContent = '';
+        domainInput.focus();
+      });
+      domainInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          doResolve();
+        }
+      });
+
+      init();
+    })();
+  </script>
+</body>
+</html>`;
   return new Response(html, { headers: { "content-type": "text/html;charset=UTF-8" } });
 }
 
