@@ -38,7 +38,7 @@ permissions:
 jobs:
   build:
     # 选择虚拟环境
-    runs-on: dns-latest
+    runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
     strategy:
       fail-fast: false
